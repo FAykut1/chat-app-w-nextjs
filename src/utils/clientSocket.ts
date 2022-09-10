@@ -5,7 +5,7 @@ let socket: Socket;
 
 const clientSocket = () => {
   if (!socket || !socket.connected) {
-    socket = io('http://localhost:3000', {
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3000', {
       path: '/api/socketio',
     });
   }
