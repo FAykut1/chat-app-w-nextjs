@@ -1,13 +1,14 @@
+import { getDocs, onSnapshot, Query } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useEffect, useMemo } from 'react';
 import ChatPage from '../components/ChatPage';
 import ChatRoomItem from '../components/ChatRoomItem';
+import useUser from '../hooks/useUser';
+import { messageCollection } from '../utils/firebase';
 
 const Home: NextPage = () => {
-  useEffect((): any => {
-    console.log('mount');
-  });
+  const user = useUser();
 
   return (
     <div className="">

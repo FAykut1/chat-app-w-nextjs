@@ -1,37 +1,42 @@
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  KeyboardEventHandler,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { onSnapshot } from 'firebase/firestore';
+import { ChangeEvent, useEffect, useState } from 'react';
+import useUser from '../hooks/useUser';
 import type { IMessage } from '../types/data';
-import clientSocket from '../utils/clientSocket';
+import { addMessage, messageCollection } from '../utils/firebase';
 import Message from './Message';
 
 const ChatPage: React.FC = () => {
+  const user = useUser();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [message, setMessage] = useState<string>('');
-  const socket = clientSocket();
 
   useEffect((): any => {
-    console.log('Mounted');
-    console.log(socket.connected);
-    socket.on('message', (message: IMessage) => {
-      console.log(message);
-      messages.push(message);
-      setMessages([...messages]);
+    const unsub = onSnapshot(messageCollection, (snapshot) => {
+      const _messages = snapshot.docChanges().map((docChange) => {
+        const msg = docChange.doc.data() as IMessage;
+        msg.id = docChange.doc.id;
+        return msg;
+      });
+
+      messages.push(..._messages);
+      setMessages(messages);
     });
 
-    return () => {
-      socket.off('message');
-    };
+    return () => unsub();
   }, []);
+
+  const sendMessage = async () => {
+    const msg: IMessage = {
+      userId: user?.uid,
+      username: user?.displayName || 'Anon',
+      content: message,
+    };
+    await addMessage(msg);
+  };
 
   const onInputKeyDown = async (e: any) => {
     if (e.key === 'Enter') {
-      await sendMessageToServer();
+      await sendMessage();
       setMessage('');
       e.target.value = '';
     }
@@ -39,22 +44,6 @@ const ChatPage: React.FC = () => {
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.currentTarget.value);
-  };
-
-  const sendMessageToServer = async () => {
-    if (message !== '') {
-      const msgData: IMessage = {
-        content: message,
-      };
-
-      const resp = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(msgData),
-      });
-    }
   };
 
   return (
