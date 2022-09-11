@@ -5,20 +5,24 @@ import { auth } from '../utils/firebase';
 
 const useUser = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
 
-  useEffect(() => {
-    const authChange = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log('user signed in');
-        setUser(user);
-        router.push('/');
-      } else {
-        setUser(null);
-        router.push('/login');
-      }
-    });
-    return () => authChange();
+  useEffect((): any => {
+    if (user) router.push('/');
+    else {
+      const authChange = onAuthStateChanged(auth, (_user) => {
+        if (_user && !user) {
+          console.log('user signed in');
+          setUser(_user);
+          router.push('/');
+        } else {
+          setUser(null);
+          router.push('/login');
+        }
+      });
+
+      return () => authChange();
+    }
   }, []);
 
   return user;

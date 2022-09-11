@@ -20,7 +20,6 @@ export const database = getFirestore(app);
 export const auth = getAuth(app);
 
 /** firestore exports */
-
 export const messageCollection = collection(database, 'messages');
 
 export const addMessage = (messageData: IMessage) =>
