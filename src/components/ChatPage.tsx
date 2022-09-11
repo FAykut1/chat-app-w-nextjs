@@ -63,7 +63,7 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
   };
 
   const onInputKeyDown = async (e: any) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && e.target.value) {
       let message = e.target.value;
       e.target.value = '';
       sendMessage(message);
