@@ -1,17 +1,20 @@
-import { getDocs, onSnapshot, Query } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import ChatPage from '../components/ChatPage';
-import ChatRoomItem from '../components/ChatRoomItem';
 import Drawer from '../components/Drawer';
 import useUser from '../hooks/useUser';
-import { auth, messageCollection, signInAnon } from '../utils/firebase';
 
 const Home: NextPage = () => {
   const user = useUser();
 
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+
+  const selectRoom = (roomId: string | undefined) => {
+    if (roomId) {
+      setSelectedRoom(roomId);
+    }
+  };
 
   return (
     <div className="w-screen h-screen">
@@ -20,9 +23,9 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="w-screen h-screen flex text-tfirst">
-        <Drawer />
+        <Drawer selectRoom={selectRoom} />
         <div className="w-[1px] h-full bg-first" />
-        <ChatPage roomId="" />
+        {selectedRoom ? <ChatPage roomId={selectedRoom} /> : null}
       </main>
     </div>
   );

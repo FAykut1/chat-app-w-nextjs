@@ -1,3 +1,12 @@
+export type IRoom = {
+  id?: string;
+  name?: string;
+  users: string[];
+  type: 'GROUP' | 'PRIVATE';
+  updateAt: any;
+  createAt: any;
+};
+
 export type IMessage = {
   id?: string;
   userId?: string;

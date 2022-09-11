@@ -1,4 +1,6 @@
 import {
+  addDoc,
+  collection,
   onSnapshot,
   orderBy,
   query,
@@ -7,12 +9,11 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import useUser from '../hooks/useUser';
 import { IMessage, MessageStatus } from '../types/data';
-import { addMessage, messageCollection } from '../utils/firebase';
+import { database } from '../utils/firebase';
 import Message from './Message';
 
-import type { DocumentChangeType } from 'firebase/firestore';
-
 const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
+  const messageCollection = collection(database, `rooms/${roomId}/messages`);
   const chatDOM = useRef<HTMLDivElement | null>(null);
   const user = useUser();
   const [messages, setMessages] = useState<{ [key: string]: IMessage }>({});
@@ -59,7 +60,7 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
       createAt: serverTimestamp(),
     };
 
-    await addMessage(msg);
+    await addDoc(messageCollection, msg);
   };
 
   const onInputKeyDown = async (e: any) => {

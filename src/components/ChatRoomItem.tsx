@@ -1,23 +1,31 @@
+import { Avatar } from '@mui/material';
+import { blue, deepOrange } from '@mui/material/colors';
+import { IRoom } from '../types/data';
+
 const ChatRoomItem: React.FC<{
-  name: string;
-  pic: string;
-  date: string;
-  lastMessage: string;
-}> = ({ name, pic, date, lastMessage }) => {
+  room: IRoom;
+  onClick: React.MouseEventHandler;
+}> = ({ room, onClick }) => {
   return (
-    <div className="flex w-full h-16 items-center hover:bg-red-500">
-      <div className="w-16 h-full p-2">
-        <div className="w-full h-full bg-black rounded-[50%]" />
-      </div>
-      <div className="flex-1 p-2 overflow-hidden">
+    <div
+      onClick={onClick}
+      className="flex w-full h-20 px-4 items-center hover:bg-lsecond hover:cursor-pointer"
+    >
+      <Avatar sx={{ bgcolor: blue[500] }}>N</Avatar>
+      <div className="p-1"></div>
+      <div className="flex-1 overflow-hidden">
         <div className="flex justify-between">
           <div className="font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
-            {name}
+            {room.name}
           </div>
-          <div className="text-tsecond">{date}</div>
+          <div className="text-tsecond">
+            {room.updateAt.toLocaleTimeString(undefined, {
+              timeStyle: 'short',
+            })}
+          </div>
         </div>
         <div className="lastmessage text-ellipsis whitespace-nowrap overflow-hidden">
-          {lastMessage}
+          Last message!1.1!
         </div>
       </div>
     </div>
