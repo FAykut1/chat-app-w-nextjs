@@ -4,7 +4,7 @@ import {
   query,
   serverTimestamp,
 } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useUser from '../hooks/useUser';
 import { IMessage, MessageStatus } from '../types/data';
 import { addMessage, messageCollection } from '../utils/firebase';
@@ -13,6 +13,7 @@ import Message from './Message';
 import type { DocumentChangeType } from 'firebase/firestore';
 
 const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
+  const chatDOM = useRef<HTMLDivElement>();
   const user = useUser();
   const [messages, setMessages] = useState<{ [key: string]: IMessage }>({});
 
@@ -41,6 +42,12 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
     );
     return () => unsub();
   }, []);
+
+  useEffect(() => {
+    if (chatDOM.current) {
+      chatDOM.current.scrollTop = 0;
+    }
+  }, [messages]);
 
   const sendMessage = async (message: string) => {
     const msg: IMessage = {
@@ -71,7 +78,10 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
           <div className="text-tsecond">last seen 1 min ago</div>
         </div>
       </div>
-      <div className="w-full h-screen flex flex-col-reverse overflow-y-auto">
+      <div
+        ref={chatDOM}
+        className="w-full h-screen flex flex-col-reverse overflow-y-auto"
+      >
         {Object.values(messages)
           .sort((a, b) => b.updateAt.getTime() - a.updateAt.getTime())
           .map((msg) => (
