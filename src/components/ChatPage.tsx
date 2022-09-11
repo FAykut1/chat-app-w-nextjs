@@ -13,7 +13,7 @@ import Message from './Message';
 import type { DocumentChangeType } from 'firebase/firestore';
 
 const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
-  const chatDOM = useRef<HTMLDivElement>();
+  const chatDOM = useRef<HTMLDivElement | null>(null);
   const user = useUser();
   const [messages, setMessages] = useState<{ [key: string]: IMessage }>({});
 
@@ -87,9 +87,8 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
           .map((msg) => (
             <Message
               key={msg.id}
-              content={msg.content}
-              updateAt={msg.updateAt}
-              status={msg.status}
+              message={msg}
+              isMe={msg.userId === user?.uid}
             />
           ))}
       </div>
