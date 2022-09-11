@@ -9,8 +9,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
+  SelectChangeEvent,
+  Switch,
   TextField,
 } from '@mui/material';
 import { signOut } from 'firebase/auth';
@@ -18,10 +19,13 @@ import {
   addDoc,
   collection,
   CollectionReference,
+  doc,
+  getDoc,
   onSnapshot,
   query,
   QuerySnapshot,
   serverTimestamp,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -29,8 +33,10 @@ import useUser from '../hooks/useUser';
 import { IRoom } from '../types/data';
 import { auth, database } from '../utils/firebase';
 
+const dialogRoomTextId = 'dialogRoomTextId';
+
 const Drawer: React.FC<{
-  selectRoom: (roomId: string | undefined) => void;
+  selectRoom: (room: IRoom | undefined) => void;
 }> = ({ selectRoom }) => {
   const roomCollection = collection(
     database,
@@ -40,12 +46,14 @@ const Drawer: React.FC<{
   const user = useUser();
 
   const [isLoading, setLoading] = useState(true);
+  const [createOrJoin, setCreateOrJoin] = useState<'CREATE' | 'JOIN'>('CREATE');
+
   const [rooms, setRooms] = useState<{ [key: string]: IRoom }>({});
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
-    console.log(user.uid);
+
     const unsub = onSnapshot(
       query(roomCollection, where('users', 'array-contains', user.uid)),
       (snapshot: QuerySnapshot<IRoom>) => {
@@ -82,9 +90,18 @@ const Drawer: React.FC<{
     setDialogOpen(true);
   };
 
-  const createRoomDialogSubmit = () => {
+  const roomDialogSubmit = () => {
+    if (createOrJoin === 'CREATE') {
+      createRoom();
+    } else {
+      joinRoom();
+    }
+    setDialogOpen(false);
+  };
+
+  const createRoom = () => {
     const roomText = document.getElementById(
-      'roomNameText'
+      dialogRoomTextId
     ) as HTMLInputElement;
 
     if (user && roomText.value) {
@@ -96,16 +113,45 @@ const Drawer: React.FC<{
         createAt: serverTimestamp(),
       };
       addDoc(roomCollection, roomData);
-      setDialogOpen(false);
     }
   };
 
-  const createRoomDialogClose = () => {
+  const joinRoom = async () => {
+    const roomText = document.getElementById(
+      dialogRoomTextId
+    ) as HTMLInputElement;
+
+    const roomId = roomText.value;
+    if (!roomId) return;
+
+    const docRef = doc(roomCollection, roomId);
+    const roomDoc = await getDoc(docRef);
+    const room = roomDoc.data();
+
+    if (room && user && user.uid) {
+      room.users.push(user.uid);
+      await updateDoc(docRef, {
+        users: room.users,
+      });
+    } else {
+      alert('User or room not found');
+    }
+  };
+
+  const roomDialogClose = () => {
     setDialogOpen(false);
   };
 
   const logoutBtnClick = () => {
     signOut(auth);
+  };
+
+  const handleRoomDialogChange = (event: SelectChangeEvent<number>) => {
+    if (createOrJoin === 'CREATE') {
+      setCreateOrJoin('JOIN');
+    } else {
+      setCreateOrJoin('CREATE');
+    }
   };
 
   return (
@@ -128,29 +174,34 @@ const Drawer: React.FC<{
       <div className="">
         {Object.values(rooms).map((room) => (
           <ChatRoomItem
-            onClick={() => selectRoom(room.id)}
+            onClick={() => selectRoom(room)}
             key={room.id}
             room={room}
           />
         ))}
       </div>
 
-      <Dialog open={isDialogOpen} onClose={createRoomDialogClose}>
-        <DialogTitle>Create Room</DialogTitle>
+      <Dialog open={isDialogOpen} onClose={roomDialogClose}>
+        <DialogTitle>
+          {createOrJoin + ' '} ROOM
+          <Switch
+            checked={createOrJoin === 'CREATE'}
+            onChange={handleRoomDialogChange}
+          />
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText>Create room and start messaging</DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            id="roomNameText"
-            label="Room name"
+            id={dialogRoomTextId}
+            label={createOrJoin === 'CREATE' ? 'Room name' : 'Room ID'}
             type="text"
             variant="standard"
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={createRoomDialogClose}>Cancel</Button>
-          <Button onClick={createRoomDialogSubmit}>Create</Button>
+          <Button onClick={roomDialogClose}>Cancel</Button>
+          <Button onClick={roomDialogSubmit}>{createOrJoin}</Button>
         </DialogActions>
       </Dialog>
 

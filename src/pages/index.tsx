@@ -4,15 +4,16 @@ import { useState } from 'react';
 import ChatPage from '../components/ChatPage';
 import Drawer from '../components/Drawer';
 import useUser from '../hooks/useUser';
+import { IRoom } from '../types/data';
 
 const Home: NextPage = () => {
   const user = useUser();
 
-  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<IRoom | undefined>();
 
-  const selectRoom = (roomId: string | undefined) => {
-    if (roomId) {
-      setSelectedRoom(roomId);
+  const selectRoom = (room: IRoom | undefined) => {
+    if (room) {
+      setSelectedRoom(room);
     }
   };
 
@@ -25,7 +26,7 @@ const Home: NextPage = () => {
       <main className="w-screen h-screen flex text-tfirst">
         <Drawer selectRoom={selectRoom} />
         <div className="w-[1px] h-full bg-first" />
-        {selectedRoom ? <ChatPage roomId={selectedRoom} /> : null}
+        {selectedRoom ? <ChatPage room={selectedRoom} /> : null}
       </main>
     </div>
   );

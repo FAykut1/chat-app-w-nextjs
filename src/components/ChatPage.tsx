@@ -8,12 +8,13 @@ import {
 } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import useUser from '../hooks/useUser';
-import { IMessage, MessageStatus } from '../types/data';
+import { IMessage, IRoom, MessageStatus } from '../types/data';
 import { database } from '../utils/firebase';
+import { extractTime } from '../utils/utils';
 import Message from './Message';
 
-const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
-  const messageCollection = collection(database, `rooms/${roomId}/messages`);
+const ChatPage: React.FC<{ room: IRoom }> = ({ room }) => {
+  const messageCollection = collection(database, `rooms/${room.id}/messages`);
   const chatDOM = useRef<HTMLDivElement | null>(null);
   const user = useUser();
   const [messages, setMessages] = useState<{ [key: string]: IMessage }>({});
@@ -75,8 +76,8 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
     <div className="h-screen flex-1 flex flex-col bg-first overflow-hidden">
       <div className="h-20 bg-second p-4 flex items-center">
         <div className="">
-          <div className="font-semibold">Fatih Aykut</div>
-          <div className="text-tsecond">last seen 1 min ago</div>
+          <div className="font-semibold">{room.id}</div>
+          <div className="text-tsecond">{extractTime(room.updateAt)}</div>
         </div>
       </div>
       <div

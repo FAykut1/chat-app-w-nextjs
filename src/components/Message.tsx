@@ -1,4 +1,5 @@
 import { IMessage, MessageStatus } from '../types/data';
+import { extractTime } from '../utils/utils';
 
 const Message: React.FC<{
   message: IMessage;
@@ -25,9 +26,7 @@ const Message: React.FC<{
         <div className="flex-1 ">{message.content}</div>
         <div className="w-2"></div>
         <div className="text-sm flex items-end text-tsecond">
-          {message.updateAt.toLocaleTimeString(undefined, {
-            timeStyle: 'short',
-          })}
+          {extractTime(message.updateAt)}
         </div>
       </div>
     </div>

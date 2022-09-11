@@ -1,6 +1,7 @@
 import { Avatar } from '@mui/material';
 import { blue, deepOrange } from '@mui/material/colors';
 import { IRoom } from '../types/data';
+import { extractTime } from '../utils/utils';
 
 const ChatRoomItem: React.FC<{
   room: IRoom;
@@ -18,11 +19,7 @@ const ChatRoomItem: React.FC<{
           <div className="font-semibold text-ellipsis whitespace-nowrap overflow-hidden">
             {room.name}
           </div>
-          <div className="text-tsecond">
-            {room.updateAt.toLocaleTimeString(undefined, {
-              timeStyle: 'short',
-            })}
-          </div>
+          <div className="text-tsecond">{extractTime(room.updateAt)}</div>
         </div>
         <div className="lastmessage text-ellipsis whitespace-nowrap overflow-hidden">
           Last message!1.1!
