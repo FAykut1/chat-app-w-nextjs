@@ -18,12 +18,18 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
 
   useEffect((): any => {
     const unsub = onSnapshot(
-      query(messageCollection, orderBy('updateAt')),
+      query(messageCollection, orderBy('updateAt', 'desc')),
       (snapshot) => {
         snapshot.docChanges().forEach((docChange) => {
           const msg = docChange.doc.data() as IMessage;
           msg.id = docChange.doc.id;
-
+          if (!msg.createAt && !msg.updateAt) {
+            msg.createAt = new Date();
+            msg.updateAt = new Date();
+          } else {
+            msg.createAt = new Date(msg.createAt.seconds * 1000);
+            msg.updateAt = new Date(msg.updateAt.seconds * 1000);
+          }
           if (docChange.type === 'removed' && messages[msg.id]) {
             delete messages[msg.id];
           } else {
@@ -58,27 +64,24 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
   };
 
   return (
-    <div className="flex-grow flex flex-col bg-first">
+    <div className="h-screen flex-1 flex flex-col bg-first overflow-hidden">
       <div className="h-20 bg-second p-4 flex items-center">
         <div className="">
           <div className="font-semibold">Fatih Aykut</div>
           <div className="text-tsecond">last seen 1 min ago</div>
         </div>
       </div>
-      <div className="flex-1 relative">
-        <div className="absolute bottom-0 w-full">
-          {/* Messages */}
-          {Object.values(messages).map((msg) => (
+      <div className="w-full h-screen flex flex-col-reverse overflow-y-auto">
+        {Object.values(messages)
+          .sort((a, b) => b.updateAt.getTime() - a.updateAt.getTime())
+          .map((msg) => (
             <Message
               key={msg.id}
               content={msg.content}
-              updateAt={new Date(
-                msg.updateAt ? msg.updateAt.seconds : undefined
-              ).toLocaleTimeString(undefined, { timeStyle: 'short' })}
+              updateAt={msg.updateAt}
               status={msg.status}
             />
           ))}
-        </div>
       </div>
       <div className="h-12 flex bg-second">
         <input

@@ -14,14 +14,14 @@ const Home: NextPage = () => {
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
 
   return (
-    <div className="">
+    <div className="w-screen h-screen">
       <Head>
         <title>My awesome chat app</title>
       </Head>
 
       <main className="w-screen h-screen flex text-tfirst">
         <Drawer />
-        <div className="w-[1px] bg-first" />
+        <div className="w-[1px] h-full bg-first" />
         <ChatPage roomId="" />
       </main>
     </div>

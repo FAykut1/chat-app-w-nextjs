@@ -9,7 +9,7 @@ const Drawer: React.FC = () => {
   };
 
   return (
-    <div className="w-80 bg-second">
+    <div className="w-80 h-screen bg-second">
       <div className="h-20 bg-second p-4 flex items-center justify-between">
         <div className="font-bold">Awesome Chat-App</div>
         <div

@@ -2,11 +2,11 @@ import { MessageStatus } from '../types/data';
 
 const Message: React.FC<{
   content: string;
-  updateAt: string;
+  updateAt: Date;
   status?: MessageStatus;
 }> = ({ content, updateAt, status }) => {
   return (
-    <div className="flex pl-4 pr-4 pb-2 pt-2 items-end">
+    <div className="w-full flex pl-4 pr-4 pb-2 pt-2 items-end">
       <div className="w-10 h-10">
         <div className="w-full h-full bg-black rounded-[50%]" />
       </div>
@@ -18,7 +18,9 @@ const Message: React.FC<{
       >
         <div className="flex-1 ">{content}</div>
         <div className="w-2"></div>
-        <div className="text-sm flex items-end text-tsecond">{updateAt}</div>
+        <div className="text-sm flex items-end text-tsecond">
+          {updateAt.toLocaleTimeString(undefined, { timeStyle: 'short' })}
+        </div>
       </div>
     </div>
   );
