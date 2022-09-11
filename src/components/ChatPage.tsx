@@ -1,13 +1,10 @@
 import {
-  limit,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
-  Timestamp,
-  updateDoc,
 } from 'firebase/firestore';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useUser from '../hooks/useUser';
 import { IMessage, MessageStatus } from '../types/data';
 import { addMessage, messageCollection } from '../utils/firebase';
@@ -17,31 +14,24 @@ import type { DocumentChangeType } from 'firebase/firestore';
 
 const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
   const user = useUser();
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [messages, setMessages] = useState<{ [key: string]: IMessage }>({});
 
   useEffect((): any => {
     const unsub = onSnapshot(
       query(messageCollection, orderBy('updateAt')),
       (snapshot) => {
-        let updatedMessages = messages;
         snapshot.docChanges().forEach((docChange) => {
           const msg = docChange.doc.data() as IMessage;
           msg.id = docChange.doc.id;
-          if (docChange.type === 'added') updatedMessages.push(msg);
-          else if (docChange.type === 'modified') {
-            const i = updatedMessages.findIndex(
-              (_message) => _message.id === msg.id
-            );
-            updatedMessages[i] = msg;
+
+          if (docChange.type === 'removed' && messages[msg.id]) {
+            delete messages[msg.id];
           } else {
-            updatedMessages = updatedMessages.filter(
-              (_message) => _message.id !== msg.id
-            );
+            messages[msg.id] = msg;
           }
         });
-        setMessages([...updatedMessages]);
+        setMessages({ ...messages });
       }
-      // }
     );
     return () => unsub();
   }, []);
@@ -63,7 +53,7 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
     if (e.key === 'Enter') {
       let message = e.target.value;
       e.target.value = '';
-      await sendMessage(message);
+      sendMessage(message);
     }
   };
 
@@ -78,14 +68,13 @@ const ChatPage: React.FC<{ roomId: string }> = ({ roomId }) => {
       <div className="flex-1 relative">
         <div className="absolute bottom-0 w-full">
           {/* Messages */}
-          {messages.map((msg) => (
+          {Object.values(messages).map((msg) => (
             <Message
               key={msg.id}
               content={msg.content}
-              updateAt={new Date(msg.updateAt?.seconds).toLocaleTimeString(
-                undefined,
-                { timeStyle: 'short' }
-              )}
+              updateAt={new Date(
+                msg.updateAt ? msg.updateAt.seconds : undefined
+              ).toLocaleTimeString(undefined, { timeStyle: 'short' })}
               status={msg.status}
             />
           ))}
