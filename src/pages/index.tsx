@@ -17,6 +17,10 @@ const Home: NextPage = () => {
     }
   };
 
+  const handleBack = () => {
+    setSelectedRoom(undefined);
+  };
+
   return (
     <div className="w-screen h-screen">
       <Head>
@@ -26,7 +30,9 @@ const Home: NextPage = () => {
       <main className="w-screen h-screen flex text-tfirst">
         <Drawer selectRoom={selectRoom} />
         <div className="w-[1px] h-full bg-first" />
-        {selectedRoom ? <ChatPage room={selectedRoom} /> : null}
+        {selectedRoom ? (
+          <ChatPage handleBack={handleBack} room={selectedRoom} />
+        ) : null}
       </main>
     </div>
   );

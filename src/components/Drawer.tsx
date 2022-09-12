@@ -155,7 +155,7 @@ const Drawer: React.FC<{
   };
 
   return (
-    <div className="w-80 h-screen bg-second relative">
+    <div className="w-full sm:w-80 h-screen bg-second relative">
       <div className="h-20 bg-second p-4 flex items-center justify-between">
         <div className="font-bold">Awesome Chat-App</div>
         <div

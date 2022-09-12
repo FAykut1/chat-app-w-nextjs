@@ -13,7 +13,12 @@ import { database } from '../utils/firebase';
 import { extractTime } from '../utils/utils';
 import Message from './Message';
 
-const ChatPage: React.FC<{ room: IRoom }> = ({ room }) => {
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
+const ChatPage: React.FC<{ room: IRoom; handleBack: () => void }> = ({
+  room,
+  handleBack,
+}) => {
   const messageCollection = collection(database, `rooms/${room.id}/messages`);
   const chatDOM = useRef<HTMLDivElement | null>(null);
   const user = useUser();
@@ -73,9 +78,16 @@ const ChatPage: React.FC<{ room: IRoom }> = ({ room }) => {
   };
 
   return (
-    <div className="h-screen flex-1 flex flex-col bg-first overflow-hidden">
-      <div className="h-20 bg-second p-4 flex items-center">
-        <div className="">
+    <div className="z-50 absolute left-0 right-0 top-0 bottom-0 sm:static h-screen flex-1 flex flex-col bg-first overflow-hidden">
+      <div
+        onClick={handleBack}
+        className="h-20 bg-second p-4 flex items-center"
+      >
+        <div className="back-icon p-2 rounded-full hover:bg-first hover:cursor-pointer">
+          <ArrowBackIcon />
+        </div>
+        <div className="p-2"></div>
+        <div>
           <div className="font-semibold">{room.id}</div>
           <div className="text-tsecond">{extractTime(room.updateAt)}</div>
         </div>
