@@ -35,9 +35,7 @@ import { auth, database } from '../utils/firebase';
 
 const dialogRoomTextId = 'dialogRoomTextId';
 
-const Drawer: React.FC<{
-  selectRoom: (room: IRoom | undefined) => void;
-}> = ({ selectRoom }) => {
+const Drawer: React.FC<{}> = () => {
   const roomCollection = collection(
     database,
     'rooms'
@@ -61,11 +59,11 @@ const Drawer: React.FC<{
           const room = docRoom.doc.data();
           room.id = docRoom.doc.id;
           if (!room.createAt && !room.updateAt) {
-            room.createAt = new Date();
-            room.updateAt = new Date();
+            room.createAt = Date.now();
+            room.updateAt = Date.now();
           } else {
-            room.createAt = new Date(room.createAt.seconds * 1000);
-            room.updateAt = new Date(room.updateAt.seconds * 1000);
+            room.createAt = room.createAt.seconds * 1000;
+            room.updateAt = room.updateAt.seconds * 1000;
           }
           if (docRoom.type === 'removed') {
             delete rooms[room.id];
@@ -173,11 +171,7 @@ const Drawer: React.FC<{
       </div>
       <div className="">
         {Object.values(rooms).map((room) => (
-          <ChatRoomItem
-            onClick={() => selectRoom(room)}
-            key={room.id}
-            room={room}
-          />
+          <ChatRoomItem key={room.id} room={room} />
         ))}
       </div>
 

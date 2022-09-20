@@ -1,15 +1,18 @@
 import { Avatar } from '@mui/material';
 import { blue, deepOrange } from '@mui/material/colors';
+import { useAppDispatch } from '../app/hooks';
+import { setRoom } from '../features/chat/roomSlice';
 import { IRoom } from '../types/data';
 import { extractTime } from '../utils/utils';
 
 const ChatRoomItem: React.FC<{
   room: IRoom;
-  onClick: React.MouseEventHandler;
-}> = ({ room, onClick }) => {
+}> = ({ room }) => {
+  const dispatch = useAppDispatch();
+
   return (
     <div
-      onClick={onClick}
+      onClick={() => dispatch(setRoom(room))}
       className="flex w-full h-20 px-4 items-center hover:bg-lsecond hover:cursor-pointer"
     >
       <Avatar sx={{ bgcolor: blue[500] }}>N</Avatar>

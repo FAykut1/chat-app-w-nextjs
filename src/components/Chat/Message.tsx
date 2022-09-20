@@ -1,5 +1,5 @@
-import { IMessage, MessageStatus } from '../types/data';
-import { extractTime } from '../utils/utils';
+import { IMessage, MessageStatus } from '../../types/data';
+import { extractTime } from '../../utils/utils';
 
 const Message: React.FC<{
   message: IMessage;

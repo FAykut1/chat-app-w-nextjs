@@ -1,5 +1,5 @@
-export const extractTime = (date: Date) => {
-  return date.toLocaleTimeString(undefined, {
+export const extractTime = (date: number) => {
+  return new Date(date).toLocaleTimeString(undefined, {
     timeStyle: 'short',
   });
 };

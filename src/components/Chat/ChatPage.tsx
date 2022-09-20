@@ -7,20 +7,20 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
-import useUser from '../hooks/useUser';
-import { IMessage, IRoom, MessageStatus } from '../types/data';
-import { database } from '../utils/firebase';
-import { extractTime } from '../utils/utils';
+import useUser from '../../hooks/useUser';
+import { IMessage, IRoom, MessageStatus } from '../../types/data';
+import { database } from '../../utils/firebase';
+import { extractTime } from '../../utils/utils';
 import Message from './Message';
 
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SendIcon from '@mui/icons-material/Send';
+import ChatHeader from './ChatHeader';
+import { useAppSelector } from '../../app/hooks';
 
-const ChatPage: React.FC<{ room: IRoom; handleBack: () => void }> = ({
-  room,
-  handleBack,
-}) => {
-  const messageCollection = collection(database, `rooms/${room.id}/messages`);
+const ChatPage: React.FC<{}> = () => {
+  const room = useAppSelector((state) => state.room.value);
+
+  const messageCollection = collection(database, `rooms/${room?.id}/messages`);
   const chatDOM = useRef<HTMLDivElement | null>(null);
   const messageInput = useRef<HTMLInputElement | null>(null);
   const user = useUser();
@@ -88,25 +88,13 @@ const ChatPage: React.FC<{ room: IRoom; handleBack: () => void }> = ({
     if (!message) return;
 
     sendMessage(message);
-
     messageInput.current.value = '';
   };
 
   return (
     <div className="absolute left-0 right-0 top-0 bottom-0 sm:relative h-full flex-1 flex flex-col bg-first overflow-hidden">
-      <div
-        onClick={handleBack}
-        className="z-50 absolute left-0 right-0 top-0 bg-second p-4 flex items-center"
-      >
-        <div className="back-icon p-2 rounded-full hover:bg-first hover:cursor-pointer">
-          <ArrowBackIcon />
-        </div>
-        <div className="p-2"></div>
-        <div>
-          <div className="font-semibold">{room.id}</div>
-          <div className="text-tsecond">{extractTime(room.updateAt)}</div>
-        </div>
-      </div>
+      <ChatHeader />
+
       <div
         ref={chatDOM}
         className="w-full pt-20 flex flex-grow flex-col-reverse overflow-x-hidden overflow-y-auto"
