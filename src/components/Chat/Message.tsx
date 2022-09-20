@@ -19,8 +19,10 @@ const Message: React.FC<{
 
       <div className="w-4"></div>
       <div
-        className={`flex p-3 min-w-[4rem] max-w-[80%] sm:max-w-[70%] rounded-md break-all ${
-          message.status == MessageStatus.SEND ? 'bg-red-600' : 'bg-second'
+        className={`flex p-3 min-w-[4rem] max-w-[80%] sm:max-w-[70%] rounded-md break-all hover:cursor-pointer transition ${
+          message.status == MessageStatus.SEND
+            ? 'bg-red-600 hover:bg-red-500'
+            : 'bg-second hover:bg-lsecond'
         }`}
       >
         <div className="flex-1">{message.content}</div>

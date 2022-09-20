@@ -1,11 +1,9 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
 import { useAppSelector } from '../app/hooks';
 import ChatPage from '../components/Chat/ChatPage';
 import Drawer from '../components/Drawer';
 import useUser from '../hooks/useUser';
-import { IRoom } from '../types/data';
 
 const Home: NextPage = () => {
   const user = useUser();
