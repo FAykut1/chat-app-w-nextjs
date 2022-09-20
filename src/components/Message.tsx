@@ -19,11 +19,11 @@ const Message: React.FC<{
 
       <div className="w-4"></div>
       <div
-        className={`flex p-3 min-w-[4rem] max-w-1/2 ${
+        className={`flex p-3 min-w-[4rem] max-w-[80%] sm:max-w-[70%] rounded-md break-all ${
           message.status == MessageStatus.SEND ? 'bg-red-600' : 'bg-second'
-        }  rounded-md`}
+        }`}
       >
-        <div className="flex-1 ">{message.content}</div>
+        <div className="flex-1">{message.content}</div>
         <div className="w-2"></div>
         <div className="text-sm flex items-end text-tsecond">
           {extractTime(message.updateAt)}

@@ -22,14 +22,16 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className="w-screen h-screen">
+    <div className="min-h-screen flex flex-col overflow-hidden">
       <Head>
         <title>My awesome chat app</title>
       </Head>
 
-      <main className="w-screen h-screen flex text-tfirst">
-        <Drawer selectRoom={selectRoom} />
-        <div className="w-[1px] h-full bg-first" />
+      <main className="w-screen h-screen flex text-tfirst relative">
+        <>
+          <Drawer selectRoom={selectRoom} />
+          <div className="w-[1px] h-full bg-first" />
+        </>
         {selectedRoom ? (
           <ChatPage handleBack={handleBack} room={selectedRoom} />
         ) : null}
