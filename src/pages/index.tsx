@@ -7,7 +7,6 @@ import useUser from '../hooks/useUser';
 
 const Home: NextPage = () => {
   const user = useUser();
-
   const currentRoom = useAppSelector((state) => state.room.value);
 
   return (

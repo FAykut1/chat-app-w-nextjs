@@ -18,12 +18,14 @@
     "next": "12.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-redux": "^8.0.2"
+    "react-redux": "^8.0.2",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "@types/node": "18.7.16",
     "@types/react": "18.0.19",
     "@types/react-dom": "18.0.6",
+    "@types/shortid": "^0.0.29",
     "autoprefixer": "^10.4.8",
     "eslint": "8.23.0",
     "eslint-config-next": "12.3.0",

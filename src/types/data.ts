@@ -3,6 +3,7 @@ export type IRoom = {
   name?: string;
   users: string[];
   type: 'GROUP' | 'PRIVATE';
+  invite?: IInvite;
   updateAt: any;
   createAt: any;
 };
@@ -24,3 +25,8 @@ export enum MessageStatus {
   RECEIVED,
   READ,
 }
+
+export type IInvite = {
+  inviteCode?: string;
+  isActive?: boolean;
+};

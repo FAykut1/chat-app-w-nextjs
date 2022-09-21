@@ -1,15 +1,25 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Menu, MenuItem } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Menu,
+  MenuItem,
+  Switch,
+} from '@mui/material';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { setRoom } from '../../features/chat/roomSlice';
+import { setRoom, updateInvite } from '../../features/chat/roomSlice';
 import { extractTime } from '../../utils/utils';
 
 const ChatHeader: React.FC<{}> = () => {
   const room = useAppSelector((state) => state.room.value);
   const dispatch = useAppDispatch();
 
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -21,8 +31,16 @@ const ChatHeader: React.FC<{}> = () => {
     setAnchorEl(null);
   };
 
-  const handleInviteBtn = () => {
+  const handleInviteBtn = async () => {
     handleMenuClose();
+    if (!room) return;
+    const res = await fetch('/api/invite', {
+      method: 'POST',
+      body: JSON.stringify({ roomId: room?.id }),
+    });
+    const invite = await res.json();
+    dispatch(updateInvite(invite));
+    setDialogOpen(true);
   };
 
   return (
@@ -54,6 +72,28 @@ const ChatHeader: React.FC<{}> = () => {
           <MenuItem onClick={handleMenuClose}>Change Name</MenuItem>
         </Menu>
       </div>
+
+      <Dialog
+        PaperProps={{
+          style: {
+            backgroundColor: '#000',
+            color: 'white',
+          },
+        }}
+        fullWidth
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+      >
+        <DialogTitle align="center">Invite Code</DialogTitle>
+        <DialogContent className="flex justify-center items-center">
+          <div className="hover:cursor-pointer hover:bg-[#0d0d0d] border rounded px-6 py-3">
+            {room?.invite?.inviteCode}
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Done</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
