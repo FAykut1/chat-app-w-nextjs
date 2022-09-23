@@ -19,6 +19,7 @@ import { setRoom, updateInvite } from '../../features/chat/roomSlice';
 import { extractTime } from '../../utils/utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import IconButton from '../IconButton';
+import IMenu from '../IMenu';
 const ChatHeader: React.FC<{}> = () => {
   const room = useAppSelector((state) => state.room.value);
   const dispatch = useAppDispatch();
@@ -65,18 +66,10 @@ const ChatHeader: React.FC<{}> = () => {
         <IconButton onClick={handleMenuOpen}>
           <MenuIcon />
         </IconButton>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleMenuClose}
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
-        >
+        <IMenu anchorEl={anchorEl} handleClose={handleMenuClose}>
           <MenuItem onClick={handleInviteBtn}>Invite</MenuItem>
           <MenuItem onClick={handleMenuClose}>Change Name</MenuItem>
-        </Menu>
+        </IMenu>
       </div>
 
       <Dialog

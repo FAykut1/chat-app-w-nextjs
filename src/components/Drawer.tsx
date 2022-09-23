@@ -35,6 +35,7 @@ import useUser from '../hooks/useUser';
 import { IRoom } from '../types/data';
 import { auth, database } from '../utils/firebase';
 import IconButton from './IconButton';
+import IMenu from './IMenu';
 
 const dialogRoomTextId = 'dialogRoomTextId';
 
@@ -175,15 +176,7 @@ const Drawer: React.FC<{}> = () => {
           <IconButton onClick={handleMenuOpen}>
             <MenuIcon />
           </IconButton>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleMenuClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
+          <IMenu anchorEl={anchorEl} handleClose={handleMenuClose}>
             <MenuItem onClick={() => handleRoomButtons(RoomChoice.JOIN)}>
               Join Group
             </MenuItem>
@@ -191,7 +184,7 @@ const Drawer: React.FC<{}> = () => {
               Create Group
             </MenuItem>
             <MenuItem onClick={logoutBtnClick}>Logout</MenuItem>
-          </Menu>
+          </IMenu>
         </div>
       </div>
       <div className="">
