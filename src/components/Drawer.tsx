@@ -1,5 +1,5 @@
 import ChatRoomItem from './ChatRoomItem';
-
+import MenuIcon from '@mui/icons-material/Menu';
 import GroupsIcon from '@mui/icons-material/Groups';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SyncIcon from '@mui/icons-material/Sync';
@@ -10,6 +10,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Menu,
+  MenuItem,
   SelectChangeEvent,
   Switch,
   TextField,
@@ -32,8 +34,14 @@ import { useEffect, useState } from 'react';
 import useUser from '../hooks/useUser';
 import { IRoom } from '../types/data';
 import { auth, database } from '../utils/firebase';
+import IconButton from './IconButton';
 
 const dialogRoomTextId = 'dialogRoomTextId';
+
+enum RoomChoice {
+  CREATE = 'CREATE',
+  JOIN = 'JOIN',
+}
 
 const Drawer: React.FC<{}> = () => {
   const roomCollection = collection(
@@ -44,10 +52,15 @@ const Drawer: React.FC<{}> = () => {
   const user = useUser();
 
   const [isLoading, setLoading] = useState(true);
-  const [createOrJoin, setCreateOrJoin] = useState<'CREATE' | 'JOIN'>('CREATE');
+  const [createOrJoin, setCreateOrJoin] = useState<RoomChoice>(
+    RoomChoice.CREATE
+  );
 
   const [rooms, setRooms] = useState<{ [key: string]: IRoom }>({});
   const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     if (!user) return;
@@ -84,12 +97,14 @@ const Drawer: React.FC<{}> = () => {
     return () => unsub();
   }, [user]);
 
-  const createRoomBtnClick = () => {
+  const handleRoomButtons = (choice: RoomChoice) => {
+    handleMenuClose();
+    setCreateOrJoin(choice);
     setDialogOpen(true);
   };
 
   const roomDialogSubmit = () => {
-    if (createOrJoin === 'CREATE') {
+    if (createOrJoin === RoomChoice.CREATE) {
       createRoom();
     } else {
       joinRoom();
@@ -144,29 +159,39 @@ const Drawer: React.FC<{}> = () => {
     signOut(auth);
   };
 
-  const handleRoomDialogChange = (event: SelectChangeEvent<number>) => {
-    if (createOrJoin === 'CREATE') {
-      setCreateOrJoin('JOIN');
-    } else {
-      setCreateOrJoin('CREATE');
-    }
+  const handleMenuOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   return (
     <div className="w-full sm:w-80 h-full bg-second relative">
       <div className="h-20 bg-second p-4 flex items-center justify-between">
         <div className="font-bold">Awesome Chat-App</div>
-        <div
-          onClick={createRoomBtnClick}
-          className="p-2 rounded border hover:bg-first hover:cursor-pointer"
-        >
-          <GroupsIcon />
-        </div>
-        <div
-          onClick={logoutBtnClick}
-          className="p-2 rounded border hover:bg-first hover:cursor-pointer"
-        >
-          <LogoutIcon />
+        <div className="">
+          <IconButton onClick={handleMenuOpen}>
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleMenuClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
+            <MenuItem onClick={() => handleRoomButtons(RoomChoice.JOIN)}>
+              Join Group
+            </MenuItem>
+            <MenuItem onClick={() => handleRoomButtons(RoomChoice.CREATE)}>
+              Create Group
+            </MenuItem>
+            <MenuItem onClick={logoutBtnClick}>Logout</MenuItem>
+          </Menu>
         </div>
       </div>
       <div className="">
@@ -176,19 +201,13 @@ const Drawer: React.FC<{}> = () => {
       </div>
 
       <Dialog open={isDialogOpen} onClose={roomDialogClose}>
-        <DialogTitle>
-          {createOrJoin + ' '} ROOM
-          <Switch
-            checked={createOrJoin === 'CREATE'}
-            onChange={handleRoomDialogChange}
-          />
-        </DialogTitle>
+        <DialogTitle>{createOrJoin + ' '} ROOM</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
             id={dialogRoomTextId}
-            label={createOrJoin === 'CREATE' ? 'Room name' : 'Room ID'}
+            label={createOrJoin === RoomChoice.CREATE ? 'Room name' : 'Room ID'}
             type="text"
             variant="standard"
           />
@@ -204,6 +223,20 @@ const Drawer: React.FC<{}> = () => {
           <SyncIcon fontSize="large" className="animate-spin" />
         </div>
       ) : null}
+    </div>
+  );
+};
+
+const DrawerHeaderButton: React.FC<{
+  onClick?: () => void;
+  children: JSX.Element;
+}> = ({ onClick, children }) => {
+  return (
+    <div
+      onClick={onClick}
+      className="p-1 rounded border hover:bg-first hover:cursor-pointer"
+    >
+      {children}
     </div>
   );
 };

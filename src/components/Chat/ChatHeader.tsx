@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { setRoom, updateInvite } from '../../features/chat/roomSlice';
 import { extractTime } from '../../utils/utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import IconButton from '../IconButton';
 const ChatHeader: React.FC<{}> = () => {
   const room = useAppSelector((state) => state.room.value);
   const dispatch = useAppDispatch();
@@ -83,6 +84,7 @@ const ChatHeader: React.FC<{}> = () => {
           style: {
             backgroundColor: '#393E46',
             color: 'white',
+            borderRadius: 24,
           },
         }}
         fullWidth
@@ -107,20 +109,6 @@ const ChatHeader: React.FC<{}> = () => {
           <Button onClick={() => setDialogOpen(false)}>Done</Button>
         </DialogActions>
       </Dialog>
-    </div>
-  );
-};
-
-const IconButton: React.FC<{
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-  children?: JSX.Element;
-}> = ({ onClick, children }) => {
-  return (
-    <div
-      onClick={onClick}
-      className="back-icon p-2 rounded-full hover:bg-first hover:cursor-pointer"
-    >
-      {children}
     </div>
   );
 };
