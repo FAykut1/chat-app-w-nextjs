@@ -1,5 +1,8 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MenuIcon from '@mui/icons-material/Menu';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DoneIcon from '@mui/icons-material/Done';
+
 import {
   Button,
   Dialog,
@@ -14,11 +17,12 @@ import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { setRoom, updateInvite } from '../../features/chat/roomSlice';
 import { extractTime } from '../../utils/utils';
-
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 const ChatHeader: React.FC<{}> = () => {
   const room = useAppSelector((state) => state.room.value);
   const dispatch = useAppDispatch();
 
+  const [copied, setCopied] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -40,6 +44,7 @@ const ChatHeader: React.FC<{}> = () => {
     });
     const invite = await res.json();
     dispatch(updateInvite(invite));
+    setCopied(false);
     setDialogOpen(true);
   };
 
@@ -76,7 +81,7 @@ const ChatHeader: React.FC<{}> = () => {
       <Dialog
         PaperProps={{
           style: {
-            backgroundColor: '#000',
+            backgroundColor: '#393E46',
             color: 'white',
           },
         }}
@@ -86,9 +91,17 @@ const ChatHeader: React.FC<{}> = () => {
       >
         <DialogTitle align="center">Invite Code</DialogTitle>
         <DialogContent className="flex justify-center items-center">
-          <div className="hover:cursor-pointer hover:bg-[#0d0d0d] border rounded px-6 py-3">
-            {room?.invite?.inviteCode}
-          </div>
+          {room?.invite?.inviteCode ? (
+            <CopyToClipboard
+              text={room.invite.inviteCode}
+              onCopy={() => setCopied(true)}
+            >
+              <div className="flex items-center hover:cursor-pointer hover:bg-[#0d0d0d] border rounded px-4 py-3">
+                <button className="pr-2">{room.invite.inviteCode}</button>
+                {copied ? <DoneIcon /> : <ContentCopyIcon />}
+              </div>
+            </CopyToClipboard>
+          ) : null}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Done</Button>
